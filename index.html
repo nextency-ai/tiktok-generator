@@ -19,12 +19,11 @@
     <div id="app">
         <h1>Generator Viralowych Wideo</h1>
         
-        <!-- FORMULARZ 2: WYSYŁKA LINKU I ZDJĘCIA (Uruchamia Workflow #2) -->
-        <form id="video-link-form" action="https://nextency.app.n8n.cloud/webhook/7c2e2895-569e-4622-81a1-b82f7fea4169" method="POST" enctype="multipart/form-data">
+        <form id="video-link-form" method="POST" enctype="multipart/form-data">
             <h2>KROK 2: Wybór Wideo i Generowanie</h2>
             <p>Wklej link do wideo, które wybrałeś z e-maila z inspiracjami:</p>
             
-            <label for="email-2">Twój adres e-mail (na który otrzymasz gotowe wideo ):</label>
+            <label for="email-2">Twój adres e-mail (na który otrzymasz gotowe wideo):</label>
             <input type="email" id="email-2" name="email" placeholder="np. jan.kowalski@example.com" required>
             
             <label for="video-link">Link do wideo z TikToka:</label>
@@ -43,39 +42,33 @@
         const appContainer = document.getElementById('app');
         const submitButton = document.getElementById('submit-button');
 
-        // Obsługa formularza KROK 2
         videoLinkForm.addEventListener('submit', async (e) => {
-            // 1. Zapobiegaj domyślnej, pustej wysyłce formularza
             e.preventDefault();
 
-            // Zablokuj przycisk, aby zapobiec wielokrotnemu klikaniu
             submitButton.disabled = true;
             submitButton.innerText = 'Przetwarzanie...';
             
-            // 2. Pokaż użytkownikowi komunikat o rozpoczęciu procesu
             appContainer.innerHTML = `
                 <h1>Rozpoczynamy generowanie wideo...</h1>
                 <p>Wideo zostanie wysłane na Twój e-mail, gdy będzie gotowe. To może potrwać kilka minut.</p>
                 <p>Możesz bezpiecznie zamknąć to okno.</p>
             `;
 
-            // 3. Zbierz wszystkie dane z formularza (w tym plik)
             const formData = new FormData(e.target);
             
             try {
-                // 4. Wyślij dane do webhooka n8n za pomocą fetch
+                // === OSTATECZNA POPRAWKA ===
+                // Używamy poprawnej nazwy zmiennej: 'webhookUrl' zamiast 'mainWebhookUrl'
                 const response = await fetch(webhookUrl, {
                     method: 'POST',
-                    body: formData, // FormData automatycznie obsługuje wysyłkę plików
+                    body: formData,
                 });
                 
-                // 5. Obsłuż ewentualne błędy serwera
                 if (!response.ok) {
                     throw new Error(`Błąd serwera n8n: ${response.status}`);
                 }
                 
             } catch (error) {
-                // 6. Pokaż komunikat o błędzie, jeśli wysyłka się nie uda
                 appContainer.innerHTML = `
                     <h1>Wystąpił krytyczny błąd</h1>
                     <p>Nie udało się połączyć z serwerem w celu rozpoczęcia generowania: ${error.message}</p>
