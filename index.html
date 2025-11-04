@@ -18,7 +18,6 @@
     <div id="app">
         <h1>Generator Viralowych Wideo</h1>
         
-        <!-- FORMULARZ 2: Adaptacja działającego formularza #1 -->
         <form id="video-link-form" action="https://nextency.app.n8n.cloud/webhook/7c2e2895-569e-4622-81a1-b82f7fea4169" method="POST" enctype="multipart/form-data">
             <h2>KROK 2: Wybór Wideo i Generowanie</h2>
             <p>Wklej link do wideo, które wybrałeś z e-maila z inspiracjami:</p>
@@ -29,20 +28,39 @@
             <label for="video-link">Link do wideo z TikToka:</label>
             <input type="url" id="video-link" name="video_link" placeholder="https.tiktok.com/@..." required>
             
-            <label for="product_image-2">Zdjęcie produktu:</label>
-            <input type="file" id="product_image-2" name="product_image" accept="image/*" required>
+            <label for="product_image-2">Zdjęcie produktu (tylko JPG lub PNG ):</label>
+            <!-- ZMIANA 1: Ograniczenie atrybutu 'accept' -->
+            <input type="file" id="product_image-2" name="product_image" accept="image/jpeg, image/png" required>
             
             <button type="submit">Generuj Wideo</button>
         </form>
     </div>
 
     <script>
-        // Używamy dokładnie tej samej logiki co w działającym skrypcie #1
         const webhookUrl = 'https://nextency.app.n8n.cloud/webhook/7c2e2895-569e-4622-81a1-b82f7fea4169';
         const videoLinkForm = document.getElementById('video-link-form' );
         const appContainer = document.getElementById('app');
+        
+        // ZMIANA 2: Dodanie walidacji pliku przed wysłaniem
+        const fileInput = document.getElementById('product_image-2');
+        const allowedMimeTypes = ['image/jpeg', 'image/png'];
 
         videoLinkForm.addEventListener('submit', async (e) => {
+            // Sprawdź typ pliku przed wysłaniem
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                if (!allowedMimeTypes.includes(file.type)) {
+                    // Zatrzymaj domyślną akcję wysyłania formularza
+                    e.preventDefault();
+                    // Poinformuj użytkownika o błędzie
+                    alert('Błąd: Proszę wybrać plik w formacie JPG lub PNG.');
+                    // Wyczyść pole input, aby użytkownik mógł wybrać nowy plik
+                    fileInput.value = '';
+                    return; // Zakończ działanie funkcji
+                }
+            }
+
+            // Jeśli walidacja przeszła pomyślnie, kontynuuj
             e.preventDefault();
             
             appContainer.innerHTML = `
